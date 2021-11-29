@@ -17,7 +17,6 @@ export default function Home() {
   }, []);
   async function loadNFTs() {
     const provider = new ethers.providers.Web3Provider(web3.currentProvider);
-    console.log("provider: ", provider);
     const tokenContract = new ethers.Contract(nftaddress, NFT.abi, provider);
     const marketContract = new ethers.Contract(
       nftmarketaddress,
@@ -50,8 +49,10 @@ export default function Home() {
   async function buyNft(nft) {
     /* needs the user to sign the transaction, so will use Web3Provider and sign it */
     const web3Modal = new Web3Modal();
+    const connection = await web3Modal.connect();
     const provider = new ethers.providers.Web3Provider(connection);
     const signer = provider.getSigner();
+    console.log("signer: ", signer);
     const contract = new ethers.Contract(
       nftmarketaddress,
       Marketplace.abi,
@@ -60,15 +61,21 @@ export default function Home() {
 
     /* user will be prompted to pay the asking proces to complete the transaction */
     const price = ethers.utils.parseUnits(nft.price.toString(), "ether");
-    const transaction = await contract.createMarketSale(
-      nftaddress,
-      nft.tokenId,
-      {
-        value: price,
-      }
-    );
-    await transaction.wait();
-    loadNFTs();
+    try {
+      const transaction = await contract.createMarketSale(
+        nftaddress,
+        nft.tokenId,
+        {
+          value: price,
+        }
+      );
+      await transaction.wait();
+      loadNFTs();
+    } catch (err) {
+      alert(
+        "Insufficient funds! Please confirm that you have enough MATIC in your wallet to afford the NFT you have selected."
+      );
+    }
   }
   if (loadingState === "loaded" && !nfts.length)
     return <h1 className="px-20 py-10 text-3xl">No items in marketplace</h1>;
@@ -97,10 +104,10 @@ export default function Home() {
                 </div>
                 <div className="p-4 bg-black">
                   <p className="text-2xl mb-4 font-bold text-white">
-                    {nft.price} ETH
+                    {nft.price} MATIC
                   </p>
                   <button
-                    className="w-full bg-pink-500 text-white font-bold py-2 px-12 rounded"
+                    className="w-full bg-red-500 text-white font-bold py-2 px-12 rounded"
                     onClick={() => buyNft(nft)}
                   >
                     Buy

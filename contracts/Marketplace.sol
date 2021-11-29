@@ -11,17 +11,34 @@ import "hardhat/console.sol";
 
 /// @title Contract for Photo NFT marketplace
 /// @author Alec D'Alelio inspired by Nader Dabit
-/// @notice Allows users to create or purchase photo NFTs
+/// @notice Allows users to create or purchase photo NFTs and view NFTs owned/purchased
+
 contract Marketplace is ReentrancyGuard {
   using Counters for Counters.Counter;
+
+  /// @notice Counters to track the total number of items created and sold.
   Counters.Counter private _itemIds;
   Counters.Counter private _itemsSold;
 
+  /// @notice initializes payable address variable to represent the Marketplace owner
   address payable owner;
-  uint256 listingPrice = 0.01 ether;
 
+  /// @notice initializes listingPrice to 1 MATIC to create revenue stream for Marketplace owner
+  uint256 listingPrice = 1 ether;
+
+  /// @notice initializes contract owner to the deployer and ensures it is payable
   constructor() {
     owner = payable(msg.sender);
+  }
+
+  modifier onlyOwner() {
+    require(msg.sender == owner, "Not authorized.");
+    _;
+  }
+  
+  /// @notice onlyOwner modifier used to ensure that withdrawal is limited to the contract owner
+  function withdraw(uint _amount) onlyOwner public {
+      owner.transfer(_amount);
   }
 
   struct PhotoNFT {
@@ -34,8 +51,17 @@ contract Marketplace is ReentrancyGuard {
     bool sold;
   }
 
+  /// @notice mapping IDs to NFTs
   mapping(uint256 => PhotoNFT) private photoNFTs;
 
+  /// @notice emitted when a new photo NFT is created
+  /// @param itemId item identifier within the marketplace
+  /// @param nftContract pointer to NFT.sol contract
+  /// @param tokenId unique ERC721 NFT
+  /// @param seller address which minted/sold the NFT
+  /// @param owner NFT owner
+  /// @param price the price of the NFT in the marketplace
+  /// @param sold whether or not the NFT has sold
   event PhotoNFTCreated (
     uint indexed itemId,
     address indexed nftContract,
@@ -51,7 +77,10 @@ contract Marketplace is ReentrancyGuard {
     return listingPrice;
   }
 
-  /// Creates a Photo NFT and places it for sale on the marketplace
+  /// @notice create a Photo NFT and places it for sale on the marketplace
+  /// @param nftContract pointer to NFT.sol contract
+  /// @param tokenId unique ERC721 NFT
+  /// @param price the price of the NFT in the marketplace
   function createPhotoNFT(
     address nftContract,
     uint256 tokenId,
@@ -86,7 +115,9 @@ contract Marketplace is ReentrancyGuard {
     );
   }
 
-  /// Creates NFT sale and transfers ownership from creator to buyer
+  /// @notice Creates NFT sale and transfers ownership from creator to buyer
+  /// @param nftContract pointer to NFT.sol contract
+  /// @param itemId item identifier within the marketplace
   function createMarketSale(
     address nftContract,
     uint256 itemId
@@ -103,7 +134,7 @@ contract Marketplace is ReentrancyGuard {
     payable(owner).transfer(listingPrice);
   }
 
-  /* Returns all unsold market items */
+  /// @notice Return all unsold market items
   function fetchUnsoldPhotoNFTs() public view returns (PhotoNFT[] memory) {
     uint itemCount = _itemIds.current();
     uint unsoldItemCount = _itemIds.current() - _itemsSold.current();
@@ -121,7 +152,7 @@ contract Marketplace is ReentrancyGuard {
     return items;
   }
  
-  /* Returns only items that a user has purchased */
+  /// @notice Returns all NFTs owned by user
   function fetchMyPhotoNFTs() public view returns (PhotoNFT[] memory) {
     uint totalItemCount = _itemIds.current();
     uint itemCount = 0;
@@ -145,7 +176,7 @@ contract Marketplace is ReentrancyGuard {
     return items;
   }
 
-  /// Returns all photo NFTs created by given user
+  /// @notice Returns all NFTs created by user
   function fetchPhotoNFTsCreated() public view returns (PhotoNFT[] memory) {
     uint totalItemCount = _itemIds.current();
     uint itemCount = 0;
