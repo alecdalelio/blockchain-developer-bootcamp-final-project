@@ -1,34 +1,13 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Consensys Bootcamp Final Project
 
-## Getting Started
+My final project is a barebones implementation of an NFT marketplace for photography NFTs deployed on the Polygon Mumbai Testnet. I used Next JS for the frontend and Hardhat for the contracts and tests.
 
-First, run the development server:
+The project contains two smart contracts: Marketplace and NFT. The NFT contract inherits from OpenZeppelin's ERC721URIStorage. Marketplace inherits from OpenZeppelin's ReentrancyGuard in order to protect against reentrancy attacks.
 
-```bash
-npm run dev
-# or
-yarn dev
-```
+The frontend provides four basic views: an index/home where all NFTs are displayed, a form to create an NFT, a view for all NFTs purchased by a single user and a view for all NFTs created by that user.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The frontend is deployed on Netlify and can be accessed here: [redacted]
 
-You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
+My public Ethereum account is dalel.eth.
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.js`.
-
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+To run the project you'll need Hardhat installed. Run npm install or yarn install within the project directory to install hardhat and any other dependencies that may be missing on your machine. To run the frontend locally simply run "npm run dev", and to run the tests run "npx hardhat test"

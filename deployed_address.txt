@@ -1,0 +1,2 @@
+Marketplace deployed to: 0xf8c9e6D7F2E5A3a424e261d986a6e0A76cf5DD68
+NFT deployed to: 0x530C6e3676C177CfbAD1ac3419778af344FC6Cea
